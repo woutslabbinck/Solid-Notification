@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@rubensworks/solid-client-authn-isomorphic": "^2.0.1",
+    "@solid/community-server": "https://github.com/CommunitySolidServer/CommunitySolidServer#feat/add-notification",
+    "solid-webhook-client": "^0.1.1"
+  }
+}
