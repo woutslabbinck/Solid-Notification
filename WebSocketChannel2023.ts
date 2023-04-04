@@ -100,15 +100,14 @@ export class WebSocketChannel2023 {
             method: "POST",
             headers: {
                 "content-type": 'application/ld+json',
-                // 'accept':'text/turtle' // note: this doesn't work -> bug in CSS
+                'accept':'text/turtle' // note: this doesn't work -> bug in CSS
             },
             body: JSON.stringify(body)
         })
-        // Parse resulting response
-        // console.log(await response.text());
 
+        // Parse resulting response
         const store = await parseResponse(response);
-        const receiveFrom = store.getQuads(null, NOTIFY.namespace + "receiveFrom", null, null)
+        const receiveFrom = store.getQuads(null, NOTIFY.receiveFrom, null, null)
 
         if (receiveFrom.length !== 1) throw Error("receiveFrom property not found.")
 
@@ -146,6 +145,7 @@ async function parseResponse(response: Response): Promise<Store> {
     const text = await response.text()
     const textStream = require('streamify-string')(text);
 
+    // doing just like the CSS does https://github.com/CommunitySolidServer/CommunitySolidServer/blob/8978d770ee70b8c6dc17b3d6525b570bfe0ba2d7/src/storage/conversion/RdfToQuadConverter.ts#L40
     const documentLoader = new ContextDocumentLoader({
         'https://www.w3.org/ns/solid/notification/v1': './notification.jsonld'
     })
@@ -167,10 +167,10 @@ async function main() {
         // startAt: '1988-03-09T14:48:00.000Z',
         // endAt: '1988-03-09T14:48:00.000Z',
         // state: '', 
-        rate: {
-            "@value": "PT1S", // https://www.ibm.com/docs/en/i/7.1?topic=types-xsduration
-            "@type": "http://www.w3.org/2001/XMLSchema#duration"
-        }
+        // rate: {
+        //     "@value": "PT1S", // https://www.ibm.com/docs/en/i/7.1?topic=types-xsduration
+        //     "@type": "http://www.w3.org/2001/XMLSchema#duration"
+        // }
     })
 
     const socket = new WebSocket(webSocketUrl);
