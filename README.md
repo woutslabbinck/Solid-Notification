@@ -5,13 +5,12 @@ This library implements subscribing to a Notication Channel following the [Solid
 
 ## Installing
 
+```sh
+npm i solid-notification-client
+```
+
 ## Using
 
-### Setting up a solid server which supports the WebSocketChannel2023
-
-TODO:
-
-### Actual websocket
 
 Features -> TODO: describe scenario without and with features.
 
@@ -54,6 +53,19 @@ async function main() {
     // <https://www.w3.org/ns/activitystreams#published> "2023-04-05T09:09:47.290Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 
 }
+
+### Setting up a solid server which supports the WebSocketChannel2023
+
+Install the CSS that supports the Solid Notification Protocol.
+```sh
+npm i @solid/community-server https://github.com/CommunitySolidServer/CommunitySolidServer#feat/add-notification
+```
+Start a server without setup, with memory storage and with both WebSocketChannel2023 and WebHookSubscription2021 channel types for solid notifications:
+```sh
+wget https://raw.githubusercontent.com/woutslabbinck/Solid-Notification/main/config/memory-config.json
+npx @solid/community-server -c memory-config.json 
+```
+
 ## Feedback and questions
 
 Do not hesitate to [report a bug](https://github.com/woutslabbinck/Solid-Notification/issues).
