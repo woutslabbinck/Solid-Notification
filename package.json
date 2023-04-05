@@ -1,7 +1,31 @@
 {
+  "name": "solid-notification-client",
+  "version": "0.0.0",
+  "description": "Client library for Solid Notifications Protocol v0.2.0",
+  "main": "./dist/Index.js",
+  "types": "./dist/Index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist/; tsc",
+    "test": "jest",
+    "release": "npm run build && npm publish --access public"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "LD",
+    "Solid"
+  ],
+  "author": "Wout Slabbinck <wout.slabbinck@ugent.be>",
+  "license": "ISC",
   "dependencies": {
     "@rubensworks/solid-client-authn-isomorphic": "^2.0.1",
-    "@solid/community-server": "https://github.com/CommunitySolidServer/CommunitySolidServer#feat/add-notification",
-    "solid-webhook-client": "^0.1.1"
+    "@solid/community-server": "https://github.com/CommunitySolidServer/CommunitySolidServer#feat/add-notification"
+  },
+  "devDependencies": {
+    "@types/jest": "29.5.0",
+    "jest": "^29.5.0",
+    "jest-rdf": "^1.8.0",
+    "ts-jest": "^29.1.0"
   }
 }

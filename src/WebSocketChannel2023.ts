@@ -1,17 +1,17 @@
-import { Session } from "@rubensworks/solid-client-authn-isomorphic";
-import { WebSocket } from 'ws';
-import { Readable } from "stream";
-import { parseLinkHeader, SOLID, parseContentType, NOTIFY, RDF, ContextDocumentLoader } from "@solid/community-server"
-import rdfParser from "rdf-parse";
-import { storeStream } from "rdf-store-stream"
-import { DataFactory, Store, Writer } from "n3";
 import { KeysRdfParseJsonLd } from '@comunica/context-entries';
+import { Session } from "@rubensworks/solid-client-authn-isomorphic";
+import { ContextDocumentLoader, NOTIFY, SOLID, parseContentType, parseLinkHeader } from "@solid/community-server";
+import { Store } from "n3";
+import * as path from 'path';
+import rdfParser from "rdf-parse";
+import { storeStream } from "rdf-store-stream";
+import { WebSocket } from 'ws';
 
 export class WebSocketChannel2023 {
     private session: Session;
 
-    constructor(session: Session) {
-        this.session = session;
+    constructor(session?: Session) {
+        this.session = session ?? new Session();
     }
 
     /**
@@ -91,7 +91,7 @@ export class WebSocketChannel2023 {
                 "https://www.w3.org/ns/solid/notification/v1"
             ],
             topic,
-            "type": NOTIFY.WebSocketChannel2023,
+            type: NOTIFY.WebSocketChannel2023,
             ...features
         }
 
@@ -100,7 +100,7 @@ export class WebSocketChannel2023 {
             method: "POST",
             headers: {
                 "content-type": 'application/ld+json',
-                'accept':'text/turtle' // note: this doesn't work -> bug in CSS
+                'accept': 'text/turtle' // note: this doesn't work -> bug in CSS
             },
             body: JSON.stringify(body)
         })
@@ -129,12 +129,11 @@ export class WebSocketChannel2023 {
         //   }
     }
 
-    public async notifications(topic: string, stream: Readable): Promise<void> {
-        // sets up a websocket connection to the resource and pushes them to the stream
-
-        // TODO: does this make sense what I am doing or is that just too much? -> probably too much here
+    public async webSocket(topic: string, features: Record<string, unknown>): Promise<WebSocket> {
+        const webSocketUrl = await this.subscribe(topic, features);
+        const websocket = new WebSocket(webSocketUrl)
+        return websocket
     }
-
 }
 
 
@@ -147,7 +146,7 @@ async function parseResponse(response: Response): Promise<Store> {
 
     // doing just like the CSS does https://github.com/CommunitySolidServer/CommunitySolidServer/blob/8978d770ee70b8c6dc17b3d6525b570bfe0ba2d7/src/storage/conversion/RdfToQuadConverter.ts#L40
     const documentLoader = new ContextDocumentLoader({
-        'https://www.w3.org/ns/solid/notification/v1': './notification.jsonld'
+        'https://www.w3.org/ns/solid/notification/v1': path.join(__dirname, '../data/notification.jsonld')
     })
 
     const quadStream = rdfParser.parse(textStream, {
@@ -158,27 +157,3 @@ async function parseResponse(response: Response): Promise<Store> {
     return store
 }
 
-
-
-async function main() {
-    const test = new WebSocketChannel2023(new Session());
-    const webSocketUrl = await test.subscribe('http://localhost:3000/', {
-        accept: 'text/turtle',
-        // startAt: '1988-03-09T14:48:00.000Z',
-        // endAt: '1988-03-09T14:48:00.000Z',
-        // state: '', 
-        // rate: {
-        //     "@value": "PT1S", // https://www.ibm.com/docs/en/i/7.1?topic=types-xsduration
-        //     "@type": "http://www.w3.org/2001/XMLSchema#duration"
-        // }
-    })
-
-    const socket = new WebSocket(webSocketUrl);
-    socket.on('message', (something: Buffer) => {
-        const data = something.toString()
-        console.log(data);
-
-    })
-
-}
-main()

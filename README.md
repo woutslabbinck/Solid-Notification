@@ -1,58 +1,61 @@
-Attempt to use the webnotifications
+# Solid Notifications
+[![npm](https://img.shields.io/npm/v/solid-notification-client)](https://www.npmjs.com/package/solid-notification-client)
 
-## attempt 1
-sources:
+This library implements subscribing to a Notication Channel following the [Solid Notifications Protocol](https://solidproject.org/TR/notifications-protocol).
 
-- https://github.com/solid/notifications/issues/141#issuecomment-1376889639
-l
-- Solid Webhook Client: https://github.com/o-development/solid-webhook-client
-  - only does webhook implementation, not websockets (also only 2021)
-- Inrupt library: https://docs.inrupt.com/ess/latest/services/service-websocket/
-  - based on earlier versions of the solid notifications protocol + custom
-- Dokieli library:
-  - https://github.com/linkeddata/dokieli/blob/main/src/dokieli.js#L4329-4421
-  - note: ugly code and not as a package
-    
+## Installing
 
-## attempt 2
+## Using
 
-Checkout tests of Joachim:
-- https://github.com/CommunitySolidServer/CommunitySolidServer/blob/versions/6.0.0/test/integration/WebSocketSubscription2021.test.ts
-- https://github.com/CommunitySolidServer/CommunitySolidServer/blob/versions/6.0.0/test/util/NotificationUtil.ts
+### Setting up a solid server which supports the WebSocketChannel2023
 
-Then next, try to actually subscribe to something useful -> e.g. a resource http://localhost:3000/state and update it
+TODO:
 
-## Understanding the spec together with the CSS
+### Actual websocket
 
-set up a server
-```sh
-npx @solid/community-server -c memory-config.json 
-```
-spec says something about solid:storageDescription
+Features -> TODO: describe scenario without and with features.
 
-> Resource Servers that want to enable Subscription Clients to discover subscription services and notification channels available to a storage in which a given resource is in MUST advertise the associated resources describing the subscription services and notification channels by responding to an HTTP request including a Link header with the rel value of http://www.w3.org/ns/solid#storageDescription [SOLID-PROTOCOL] and the Description Resource as link target [RFC8288].
+accept: 'text/turtle',
+startAt: '1988-03-09T14:48:00.000Z',
+endAt: '1988-03-09T14:48:00.000Z',
+state: '', 
+rate: {
+    "@value": "PT1S", // https://www.ibm.com/docs/en/i/7.1?topic=types-xsduration
+    "@type": "http://www.w3.org/2001/XMLSchema#duration"
+}
 
-```sh
-curl http://localhost:3000/
-```
-Result: 
-> Link: <http://localhost:3000/.well-known/solid>; rel="http://www.w3.org/ns/solid/terms#storageDescription"
-```sh
-curl http://localhost:3000/.well-known/solid
-```
-important triple:
-```turtle
-<http://localhost:3000/.well-known/solid#websocketNotification> <http://www.w3.org/ns/solid/notifications#subscription> <http://localhost:3000/.notifications/WebSocketSubscription2021/>.
-```
+async function main() {
+    const test = new WebSocketChannel2023(new Session());
+    const webSocketUrl = await test.subscribe('http://localhost:3000/', {
+        accept: 'text/turtle',
+        startAt: '1988-03-09T14:48:00.000Z',
+        endAt: '1988-03-09T14:48:00.000Z',
+        state: '', 
+        rate: {
+            "@value": "PT1S", // https://www.ibm.com/docs/en/i/7.1?topic=types-xsduration
+            "@type": "http://www.w3.org/2001/XMLSchema#duration"
+        }
+    })
 
-`http://localhost:3000/.well-known/solid#websocketNotification` is of type WebSocketSubscription2021 with a bunch of features:
-* accept
-* expiration
-* rate
-* state
+    const socket = new WebSocket(webSocketUrl);
+    socket.on('message', (something: Buffer) => {
+        const data = something.toString()
+        console.log(data);
 
-TODO: ask Joachim:
-* should state not be the last state of the resource? In 2021 I get a timestamp string
-* TODO: download and use the branch https://github.com/CommunitySolidServer/CommunitySolidServer/tree/feat/add-notification instead of 6.0.0 alpha
-* hebt gij weet van een client? of moet ik er zelf een schrijven
-  * maak een en zet op npm -> announce to Ruben D 
+    })
+
+    // curl -X POST -H 'context-type/text/plain' -d 'lol' http://localhost:3000/
+
+    // response 
+    // <> a <https://www.w3.org/ns/activitystreams#Add>;
+    // <https://www.w3.org/ns/activitystreams#object> <http://localhost:3000/5087a35d-2559-452d-ae82-9473b86492f4>;
+    // <https://www.w3.org/ns/activitystreams#target> <http://localhost:3000/>;
+    // <http://www.w3.org/ns/solid/notifications#state> "\"1680685787000\"";
+    // <https://www.w3.org/ns/activitystreams#published> "2023-04-05T09:09:47.290Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+
+}
+## Feedback and questions
+
+Do not hesitate to [report a bug](https://github.com/woutslabbinck/Solid-Notification/issues).
+
+Further questions can also be asked to [Wout Slabbinck](mailto:wout.slabbinck@ugent.be) (developer and maintainer of this repository).
