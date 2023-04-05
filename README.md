@@ -9,50 +9,46 @@ This library implements subscribing to a Notication Channel following the [Solid
 npm i solid-notification-client
 ```
 
-## Using
+## Using the client
 
+First identify a resource you are interested in, i.e. the **topic**.
+Next, identify the [features](https://solidproject.org/TR/notifications-protocol#notification-channel) which you want to be present in the notification channel.
 
-Features -> TODO: describe scenario without and with features.
+Then you can use the following example code to set up the channel.
+In this code, a subscription is made for a [WebSocketChannel2023](http://www.w3.org/ns/solid/notifications#WebSocketChannel2023).
 
-accept: 'text/turtle',
-startAt: '1988-03-09T14:48:00.000Z',
-endAt: '1988-03-09T14:48:00.000Z',
-state: '', 
-rate: {
-    "@value": "PT1S", // https://www.ibm.com/docs/en/i/7.1?topic=types-xsduration
-    "@type": "http://www.w3.org/2001/XMLSchema#duration"
-}
+```javascript
+import { Session } from '@rubensworks/solid-client-authn-isomorphic';
+import { WebSocketChannel2023 } from 'solid-notification-client';
+import { WebSocket } from 'ws';
 
 async function main() {
-    const test = new WebSocketChannel2023(new Session());
-    const webSocketUrl = await test.subscribe('http://localhost:3000/', {
-        accept: 'text/turtle',
-        startAt: '1988-03-09T14:48:00.000Z',
-        endAt: '1988-03-09T14:48:00.000Z',
-        state: '', 
-        rate: {
-            "@value": "PT1S", // https://www.ibm.com/docs/en/i/7.1?topic=types-xsduration
-            "@type": "http://www.w3.org/2001/XMLSchema#duration"
-        }
-    })
+    const topic = 'http://localhost:3000/'
+    const features = {}
+    const channel = new WebSocketChannel2023(new Session());
+    const webSocketUrl = await channel.subscribe(topic, {})
 
     const socket = new WebSocket(webSocketUrl);
-    socket.on('message', (something: Buffer) => {
-        const data = something.toString()
-        console.log(data);
+    socket.onmessage = (message) => console.log(message.data.toString());
+} 
+main()
+```
 
-    })
+### Features
 
-    // curl -X POST -H 'context-type/text/plain' -d 'lol' http://localhost:3000/
-
-    // response 
-    // <> a <https://www.w3.org/ns/activitystreams#Add>;
-    // <https://www.w3.org/ns/activitystreams#object> <http://localhost:3000/5087a35d-2559-452d-ae82-9473b86492f4>;
-    // <https://www.w3.org/ns/activitystreams#target> <http://localhost:3000/>;
-    // <http://www.w3.org/ns/solid/notifications#state> "\"1680685787000\"";
-    // <https://www.w3.org/ns/activitystreams#published> "2023-04-05T09:09:47.290Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
-
+Following features might be supported by the Subscription Server (examples are given for each features).
+```json
+{
+    "accept": "text/turtle", 
+    "startAt": "1988-03-09T14:48:00.000Z", // format xsd:dateTime
+    "endAt": "1988-03-09T14:48:00.000Z", // format xsd:dateTime
+    "state": "", // don't know 
+    "rate": "PT1S" // format xsd:duration
 }
+```
+
+See section 2.3.2 of the specification for more details
+
 
 ### Setting up a solid server which supports the WebSocketChannel2023
 
