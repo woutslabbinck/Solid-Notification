@@ -10,7 +10,8 @@
     "release": "npm run build && npm publish --access public"
   },
   "files": [
-    "dist"
+    "dist",
+    "config"
   ],
   "keywords": [
     "LD",
