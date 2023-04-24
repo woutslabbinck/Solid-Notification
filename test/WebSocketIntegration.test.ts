@@ -24,7 +24,7 @@ describe('A WebSocketChannel2023', () => {
 
     it('fetches the websocket URL.', async () => {
         const channel = new WebSocketChannel2023(new Session());
-        expect(channel.subscribe('http://localhost:3000/', {})).resolves.toBeDefined()
+        expect(channel.subscribe(baseUrl, {})).resolves.toBeDefined()
     })
 
     it('can be used to setup a websocket.', async () => {
@@ -42,14 +42,13 @@ describe('A WebSocketChannel2023', () => {
 
         const notification = (await notificationPromise).toString()
         const notificationStore = await util(notification)
+        websocket.close();
 
         expect(notificationStore.getQuads(null, RDF.type, AS.Add, null).length).toBe(1)
         expect(notificationStore.getQuads(null, AS.object, null, null).length).toBe(1)
         expect(notificationStore.getQuads(null, AS.object, null, null)[0].object.value).toBe(response.headers.get('Location'))
         expect(notificationStore.getQuads(null, AS.namespace + 'target', null, null).length).toBe(1)
-        expect(notificationStore.getQuads(null, AS.namespace + 'target', null, null)[0].object.value).toBe(baseUrl)
-
-
+        expect(notificationStore.getQuads(null, AS.namespace + 'target', null, null)[0].object.value).toBe(baseUrl)        
     })
 })
 

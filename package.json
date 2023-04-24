@@ -1,6 +1,6 @@
 {
   "name": "solid-notification-client",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Client library for Solid Notifications Protocol v0.2.0",
   "main": "./dist/Index.js",
   "types": "./dist/Index.d.ts",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@rubensworks/solid-client-authn-isomorphic": "^2.0.1",
-    "@solid/community-server": "https://github.com/CommunitySolidServer/CommunitySolidServer#feat/add-notification"
+    "@solid/community-server": "https://github.com/CommunitySolidServer/CommunitySolidServer#versions/6.0.0"
   },
   "devDependencies": {
     "@types/jest": "29.5.0",
