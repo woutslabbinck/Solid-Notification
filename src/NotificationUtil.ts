@@ -4,7 +4,7 @@ import { parseResponse } from './Util';
 
 /**
  * Looks up the storageDescription URL of a solid pod by looking for the `http://www.w3.org/ns/solid#storageDescription` Link value.
- * 
+ *
  * @param url - the URL of the solid pod. (any resource in the pod is fine; all resources MUST advertise this Link header when the solid pod is a Resource Server. See 2.1 Discovery of the spec )
  */
 export async function lookupStorageDescription(url: string, session = new Session()): Promise<string> {
@@ -34,7 +34,7 @@ export async function lookupStorageDescription(url: string, session = new Sessio
 /**
  * Fetches the subscription URL of a Resource Server by first fetching the solid:StorageDescription URL and then extracting the WebSocketChannel2023 from the body.
  * @param url - the Url of the solid pod.
- * @returns 
+ * @returns
  */
 export async function fetchSubscriptionUrl(url: string, type: string, session = new Session()): Promise<string> {
     const storageDescriptionUrl = await lookupStorageDescription(url, session);
@@ -42,7 +42,7 @@ export async function fetchSubscriptionUrl(url: string, type: string, session = 
     const response = await session.fetch(storageDescriptionUrl)
     const store = await parseResponse(response)
 
-    const notificationChannels = store.getObjects(storageDescriptionUrl, NOTIFY.terms.subscription, null)
+    const notificationChannels = store.getObjects(null, NOTIFY.terms.subscription, null)
 
     let webSocketChannel: string | undefined
     for (const notificationChannel of notificationChannels) {
